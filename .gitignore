@@ -1,2 +1,5 @@
 # Archive of centos files
-/archive-centos7
+archive-centos7
+
+# .git files
+.git*
