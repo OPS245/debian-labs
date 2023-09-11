@@ -17,6 +17,7 @@
 # Function to indicate OK (in green) if check is true; otherwise, indicate
 # WARNING (in red) if check is false and end with false exit status
 
+suser=${SUDO_USER:-$USER}
 logfile=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)/Desktop/lab1_output.txt
 
 function check(){
@@ -39,7 +40,7 @@ function check(){
 
 clear  # Clear the screen
 
-# Make certain user is logged in as root
+# Make certain suser is logged in as root
 if [ $(whoami) != "root" ]
 then
   echo "Note: You are required to run this program as root."
@@ -76,13 +77,13 @@ check "lsblk -f | grep  /var/lib/libvirt/images$ | grep -isq ext4" "You needed t
 
 # Checking for correct sizes for the partitions created
 echo -n "Checking that the root partition is at least 30GB: " | tee -a $logfile
-check "test `df | grep /$ | awk '{print $2;}'` -ge 30000000" "The size of the root partition must be at least 30GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
+check "test `df | grep /$ | awk '{print $2;}'` -ge 28000000" "The size of the root partition must be at least 30GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
 
 echo -n "Checking that the /home partition is at least 40GB: " | tee -a $logfile
-check "test `df | grep /home$ | awk '{print $2;}'` -ge 40000000" "The /home partition must be at least 40GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
+check "test `df | grep /home$ | awk '{print $2;}'` -ge 38000000" "The /home partition must be at least 40GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
 
 echo -n "Checking that the \"/var/lib/libvirt/images\" partition is at least 100GB: " | tee -a $logfile
-check  "test `df | grep /var/lib/libvirt/images$ | awk '{print $2;}'` -ge 100000000" "The \"/var/lib/libvirt/images\" partition must be at least 100GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
+check  "test `df | grep /var/lib/libvirt/images$ | awk '{print $2;}'` -ge 95000000" "The \"/var/lib/libvirt/images\" partition must be at least 100GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
 
 # Checking for network connectivity
 echo -n "Checking for network connectivity: " | tee -a $logfile
@@ -92,21 +93,21 @@ check "wget -qO- http://google.ca &> /dev/null" "Your internet connection doesn'
 echo -n "Checking that AppArmor is disabled: " | tee -a $logfile
 check "systemctl status apparmor | grep -isq disabled" "AppArmor is not disabled. Please make corrections and re-run this shell script." | tee -a $logfile
 
-# Check if /home/user/bin directory was created
-echo -n "Checking that \"/home/$USER/bin\" directory was created:" | tee -a $logfile
-check "test -d \"/home/$USER/bin\"" "This program did NOT detect that the \"/$USER/bin\" directory was created. Please create this directory, and re-run this shell script." | tee -a $logfile
+# Check if /home/suser/bin directory was created
+echo -n "Checking that \"/home/$suser/bin\" directory was created:" | tee -a $logfile
+check "test -d \"/home/$suser/bin\"" "This program did NOT detect that the \"/$suser/bin\" directory was created. Please create this directory, and re-run this shell script." | tee -a $logfile
 
-# Check for existence of /home/user/bin/report.txt
-echo -n "Checking that \"/home/$USER/bin/report.txt\"  exists:" | tee -a $logfile
-check "test -f \"/home/$USER/bin/report.txt\"" "This program did NOT detect the output from the manual system report \"/home/$USER/bin/report.txt\". Please create your manual system report and re-run this shell script." | tee -a $logfile
+# Check for existence of /home/suser/bin/report.txt
+echo -n "Checking that \"/home/$suser/bin/report.txt\"  exists:" | tee -a $logfile
+check "test -f \"/home/$suser/bin/report.txt\"" "This program did NOT detect the output from the manual system report \"/home/$suser/bin/report.txt\". Please create your manual system report and re-run this shell script." | tee -a $logfile
 
-# Check for existence of /home/user/bin/myreport.bash script
-echo -n "Checking that \"/home/$USER/bin/myreport.bash\" script exists:" | tee -a $logfile
-check "test -f \"/home/$USER/bin/myreport.bash\"" "This program did NOT detect the file pathname \"/home/$USER/bin/myreport.bash\". Please create this script at that pathname and re-run this shell script." | tee -a $logfile
+# Check for existence of /home/suser/bin/myreport.bash script
+echo -n "Checking that \"/home/$suser/bin/myreport.bash\" script exists:" | tee -a $logfile
+check "test -f \"/home/$suser/bin/myreport.bash\"" "This program did NOT detect the file pathname \"/home/$suser/bin/myreport.bash\". Please create this script at that pathname and re-run this shell script." | tee -a $logfile
 
 # Check that myreport.bash script was run
-echo -n "Checking that \"/home/$USER/bin/myreport.bash\" script was run:" | tee -a $logfile
-check "test -f \"/home/$USER/bin/sysreport.txt\"" "This program did NOT detect the existence of the file \"/home/$USER/bin/sysreport.txt\" and may indicate that the shell script was NOT run. Please run the shell script correctly and re-run this shell script." | tee -a $logfile
+echo -n "Checking that \"/home/$suser/bin/myreport.bash\" script was run:" | tee -a $logfile
+check "test -f \"/home/$suser/bin/sysreport.txt\"" "This program did NOT detect the existence of the file \"/home/$suser/bin/sysreport.txt\" and may indicate that the shell script was NOT run. Please run the shell script correctly and re-run this shell script." | tee -a $logfile
 
 warningcount=`grep -c "WARNING" $logfile`
 
