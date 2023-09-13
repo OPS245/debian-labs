@@ -8,14 +8,20 @@
 # Edited by: Peter Callaghan
 # Date: 26 Sept, 2021
 #
-# Purpose: Check that students correctly installed centos1, centos2,
-#          and centos3 VMs. Check that VMs installed correctly
-#          (ext4 filesystem, sizes, SElinux disabled).
+# Edited by: Brian Gray
+# Date: Sep 11 2023
+#
+# Rewritten for new Debian Labs
+#
+# Purpose: Check that students correctly installed deb1, deb2,
+#          and deb3 VMs. Check that VMs installed correctly
+#          (ext4 filesystem, sizes, AppArmor disabled).
 #          Check that VMs were backed-up, and backup script created
 
 # Function to indicate OK (in green) if check is true; otherwise, indicate
 # WARNING (in red) if check is false and end with false exit status
 
+suser=${SUDO_USER:-$USER}
 logfile=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)/Desktop/lab2_output.txt
 
 function check(){
@@ -52,26 +58,17 @@ ATTENTION:
 In order to run this shell script, please
 have the following information ready:
 
- - IPADDRESSES for your centos1 and centos2 VMs
-   For your centos2 VM, the ifconfig command does
-   not work. Instead, use the command:
-   ip address
+ - IPADDRESSES for your deb1 and deb2 VMs
+   use the command: ip address
 
- - Your regular username password for c7host and ALL VMs.
+ - Your regular username password for debhost and ALL VMs.
    You were instructed to have the IDENTICAL usernames
-   and passwords for ALL of these Linux servers. If not
-   login into each VM, switch to root, and use the commands:
-
-   useradd -m [regular username]
-   passwd [regular username]
-
-   Before proceeding.  
+   and passwords for ALL of these Linux hosts
 
 After reading the above steps, press ENTER to continue
 +
 read null
 clear
-
 
 # Start checking lab2
 echo "OPS245 Lab 2 Check Script" > $logfile
@@ -79,72 +76,65 @@ echo | tee -a $logfile
 echo "CHECKING YOUR LAB 2 WORK:" | tee -a $logfile
 echo | tee -a $logfile
 
-read -p "Enter the username that you created for your c7host and ALL VMs: " UserName
+read -p "Enter the username that you created for your debhost and ALL VMs: " UserName
 # Insert various checks here
 
-# Check if ~user/bin directory exists in c7host VM
-echo -n "Checking for existence of \"/home/$UserName/bin\" directory in c7host: " | tee -a $logfile
-check "test -d /home/$UserName/bin" "There is no bin directory contained in your home directory in your c7host VM. You need to issue command: \"mkdir /home/$UserName/bin\" and re-run this shell script." | tee -a $logfile
+# Check if ~user/bin directory exists in debhost VM
+echo -n "Checking for existence of \"/home/$UserName/bin\" directory in debhost: " | tee -a $logfile
+check "test -d /home/$UserName/bin" "There is no bin directory contained in your home directory in your debhost VM. You need to issue command: \"mkdir /home/$UserName/bin\" and re-run this shell script." | tee -a $logfile
 
 # Check if ~user/bin/lab2-check.bash path exists
 echo -n "Checking for pathname \"/home/$UserName/bin/lab2-check.bash\"" | tee -a $logfile
-check "test -f /home/$UserName/bin/lab2-check.bash" "The \"lab2-check.bash\" file should be contained in the \"/home/$UserName/bin\" directory where all shell scripts should be for your Linux system administrator. Please location that file to the directory, and re-run this checking shell script." | tee -a $logfile
+check "test -f /home/$UserName/bin/lab2-check.bash" "The \"lab2-check.bash\" file should be contained in the \"/home/$UserName/bin\" directory where all shell scripts should be for your account. Please locate that file to the directory, and re-run this checking shell script." | tee -a $logfile
 
 # Check that all 3 VMs have been created
-echo -n "Checking that \"centos1\", \"centos2\", and \"centos3\" VMs have been created:" | tee -a $logfile
-check "virsh list --all | grep -isq centos1 && virsh list --all | grep -isq centos2 && virsh list --all | grep -isq centos3" "This program detected that not ALL VMs have been created (i.e. centos1, centos2, centos3). Please create these VMs with the correct VM names, and re-run this checking shell script." | tee -a $logfile
+echo -n "Checking that \"deb1\", \"deb2\", and \"deb3\" VMs have been created:" | tee -a $logfile
+check "virsh list --all | grep -isq deb1 && virsh list --all | grep -isq deb2 && virsh list --all | grep -isq deb3" "This program detected that not ALL VMs have been created (i.e. deb1, deb2, deb3). Please create these VMs with the correct VM names, and re-run this checking shell script." | tee -a $logfile
 
 
 # Check that all 3 VMs are running
-echo -n "Checking that \"centos1\", \"centos2\", and \"centos3\" VMs are ALL running:" | tee -a $logfile
-check "virsh list | grep -isq centos1 && virsh list | grep -isq centos2 && virsh list | grep -isq centos3" "This program detected that not ALL VMs (i.e. centos1, centos2, centos3) are running. Please make certain that ALL VMs are running, and re-run this checking shell script." | tee -a $logfile
+echo -n "Checking that \"deb1\", \"deb2\", and \"deb3\" VMs are ALL running:" | tee -a $logfile
+check "virsh list | grep -isq deb1 && virsh list | grep -isq deb2 && virsh list | grep -isq deb3" "This program detected that not ALL VMs (i.e. deb1, deb2, deb3) are running. Please make certain that ALL VMs are running, and re-run this checking shell script." | tee -a $logfile
 
-# Check centos1 VM has \"ext4\" file-system types
-echo "Checking that \"centos1\" has correct ext4 file-system type:" | tee -a $logfile
-read -p "Enter IP Address for your centos1 VMs eth0 device: " centos1_IPADDR
-check "ssh $UserName@$centos1_IPADDR \"lsblk -f | grep -i /$ | grep -iqs \"ext4\"\"" "This program detected that your centos1 VM does NOT have the correct filesystem type (ext4) for your / partition. Please remove and recreate the \"centos1\" VM, and re-run this checking shell script." | tee -a $logfile
+# Check deb1 VM has \"ext4\" file-system types
+echo "Checking that \"deb1\" has correct ext4 file-system type:" | tee -a $logfile
+read -p "Enter IP Address for your deb1 VMs eth0 device: " deb1_IPADDR
+check "ssh $UserName@$deb1_IPADDR \"lsblk -f | grep -i /$ | grep -iqs \"ext4\"\"" "This program detected that your deb1 VM does NOT have the correct filesystem type (ext4) for your / partition. Please remove and recreate the \"deb1\" VM, and re-run this checking shell script." | tee -a $logfile
 
-# Check centos2 VM has \"ext4\" file-system types
-echo "Checking that \"centos2\" has correct ext4 file-system types:" | tee -a $logfile
-read -p "Enter IP Address for your centos2 VMs eth0 device: " centos2_IPADDR
-check "ssh $UserName@$centos2_IPADDR \"lsblk -f | grep -iqs \"ext4\" && lsblk -f | grep -i /home$ | grep -iqs \"ext4\"\"" "This program detected that your centos2 VM does NOT have \"ext4\" file system types for / and/or /home partitions. Please remove and recreate the \"centos2\" VM, and re-run this checking shell script." | tee -a $logfile
+# Check deb2 VM has \"ext4\" file-system types
+echo "Checking that \"deb2\" has correct ext4 file-system types:" | tee -a $logfile
+read -p "Enter IP Address for your deb2 VMs eth0 device: " deb2_IPADDR
+check "ssh $UserName@$deb2_IPADDR \"lsblk -f | grep -iqs \"ext4\" && lsblk -f | grep -i /home$ | grep -iqs \"ext4\"\"" "This program detected that your deb2 VM does NOT have \"ext4\" file system types for / and/or /home partitions. Please remove and recreate the \"deb2\" VM, and re-run this checking shell script." | tee -a $logfile
 
+# deb3 does not have to be checked since it was automatically setup...
 
-# Check centos2 VM has correct partition sizes
-echo "Checking that \"centos2\" has correct partition sizes:" | tee -a $logfile
-check "ssh $UserName@$centos2_IPADDR \"lsblk | grep -isq \"2G.*/home\" && lsblk | grep -isq \"8G.*/\"\"" "This program detected that your centos2 VM does NOT have correct partition sizes for  / and/or /home partitions. Please remove and recreate the \"centos2\" VM, and re-run this checking shell script." | tee -a $logfile
+# Check deb1 VM image file is in "images" directory
+echo "Checking that \"/var/lib/libvirt/images/deb1.qcow2\" file exists:" | tee -a $logfile
+check "test -f /var/lib/libvirt/images/deb1.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/deb1.qcow2\" does NOT exist. Please remove, and recreate the deb1 VM, and then re-run this checking shell script." | tee -a $logfile
 
+# Check deb2 VM image file is in "images" directory
+echo -n "Checking that \"/var/lib/libvirt/images/deb2.qcow2\" file exists:" | tee -a $logfile
+check "test -f /var/lib/libvirt/images/deb2.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/deb2.qcow2\" does NOT exist. Please remove, and recreate the deb1 VM, and then re-run this checking shell script." | tee -a $logfile
 
-# centos3 does not have to be checked since it was automatically setup...
-
-
-# Check centos1 VM image file is in "images" directory
-echo "Checking that \"/var/lib/libvirt/images/centos1.qcow2\" file exists:" | tee -a $logfile
-check "test -f /var/lib/libvirt/images/centos1.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/centos1.qcow2\" does NOT exist. Please remove, and recreate the centos1 VM, and then re-run this checking shell script." | tee -a $logfile
-
-# Check centos2 VM image file is in "images" directory
-echo -n "Checking that \"/var/lib/libvirt/images/centos2.qcow2\" file exists:" | tee -a $logfile
-check "test -f /var/lib/libvirt/images/centos2.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/centos2.qcow2\" does NOT exist. Please remove, and recreate the centos1 VM, and then re-run this checking shell script." | tee -a $logfile
-
-# Check centos3 VM image file is in "images" directory
-echo -n "Checking that \"/var/lib/libvirt/images/centos3.qcow2\" file exists:" | tee -a $logfile
-check "test -f /var/lib/libvirt/images/centos3.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/centos3.qcow2\" does NOT exist. Please remove, and recreate the centos3 VM, and then re-run this checking shell script." | tee -a $logfile
+# Check deb3 VM image file is in "images" directory
+echo -n "Checking that \"/var/lib/libvirt/images/deb3.qcow2\" file exists:" | tee -a $logfile
+check "test -f /var/lib/libvirt/images/deb3.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/deb3.qcow2\" does NOT exist. Please remove, and recreate the deb3 VM, and then re-run this checking shell script." | tee -a $logfile
 
 # Check that  backupVM.bash script was created in user's bin directory
 echo -n "Checking that file pathname \"/home/$UserName/bin/backupVM.py\" exists:" | tee -a $logfile
 check "test -f /home/$UserName/bin/backupVM.py" "This program detected that the file pathname \"/home/$UserName/bin/backupVM.py\" does NOT exist. please make fixes to this script, and re-run this checking shell script." | tee -a $logfile
 
-# Check centos1 VM backed up (qcow2)
-echo -n "Checking that centos1 backed up in user's home directory:" | tee -a $logfile
-check "test -f /home/$UserName/backups/centos1.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/centos1.qcow2.gz\" does NOT exist. Please properly backup the centos1 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
+# Check deb1 VM backed up (qcow2)
+echo -n "Checking that deb1 backed up in user's home directory:" | tee -a $logfile
+check "test -f /home/$UserName/backups/deb1.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/deb1.qcow2.gz\" does NOT exist. Please properly backup the deb1 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
 
-# Check centos2 VM backed up (qcow2)
-echo -n "Checking that centos2 backed up in user's home directory:" | tee -a $logfile
-check "test -f /home/$UserName/backups/centos2.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/centos2.qcow2.gz\" does NOT exist. Please properly backup the centos2 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
+# Check deb2 VM backed up (qcow2)
+echo -n "Checking that deb2 backed up in user's home directory:" | tee -a $logfile
+check "test -f /home/$UserName/backups/deb2.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/deb2.qcow2.gz\" does NOT exist. Please properly backup the deb2 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
 
-# Check centos3 VM backed up (qcow2)
-echo "Checking that centos3 backed up in user's home directory:" | tee -a $logfile
-check "test -f /home/$UserName/backups/centos3.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/centos3.qcow2.gz\" does NOT exist. Please properly backup the centos3 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
+# Check deb3 VM backed up (qcow2)
+echo "Checking that deb3 backed up in user's home directory:" | tee -a $logfile
+check "test -f /home/$UserName/backups/deb3.qcow2.gz" "This program detected that the file pathname \"/home/$UserName/backups/deb3.qcow2.gz\" does NOT exist. Please properly backup the deb3 VM (using gzip) to your home directory, and then re-run this checking shell script." | tee -a $logfile
 
 warningcount=`grep -c "WARNING" $logfile`
 
