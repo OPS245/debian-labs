@@ -121,8 +121,8 @@ echo -n "Checking that \"/var/lib/libvirt/images/deb3.qcow2\" file exists:" | te
 check "test -f /var/lib/libvirt/images/deb3.qcow2" "This program detected that the file pathname \"/var/lib/libvirt/images/deb3.qcow2\" does NOT exist. Please remove, and recreate the deb3 VM, and then re-run this checking shell script." | tee -a $logfile
 
 # Check that  backupVM.bash script was created in user's bin directory
-echo -n "Checking that file pathname \"/home/$UserName/bin/backupVM.py\" exists:" | tee -a $logfile
-check "test -f /home/$UserName/bin/backupVM.py" "This program detected that the file pathname \"/home/$UserName/bin/backupVM.py\" does NOT exist. please make fixes to this script, and re-run this checking shell script." | tee -a $logfile
+echo -n "Checking that file pathname \"/home/$UserName/bin/backupVM.bash\" exists:" | tee -a $logfile
+check "test -f /home/$UserName/bin/backupVM.bash" "This program detected that the file pathname \"/home/$UserName/bin/backupVM.bash\" does NOT exist. please make fixes to this script, and re-run this checking shell script." | tee -a $logfile
 
 # Check deb1 VM backed up (qcow2)
 echo -n "Checking that deb1 backed up in user's home directory:" | tee -a $logfile
