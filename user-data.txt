@@ -1,4 +1,4 @@
-msaul:Murray Edward Saul:msaul@senecac.on.ca
-dward:David Ward:dward@senecac.on.ca
-eweaver:Evan Weaver:eweaver@senecac.on.ca
-sapted:Scott Apted:sapted@senecac.on.ca
+msaul:Murray Edward Saul:msaul@senecacollege.ca
+dward:David Ward:dward@senecacollege.ca
+eweaver:Evan Weaver:eweaver@senecacollege.ca
+sapted:Scott Apted:sapted@senecacollege.ca
