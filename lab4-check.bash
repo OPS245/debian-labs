@@ -7,6 +7,9 @@
 # Edited by: Peter Callaghan
 # Date: Sept 26, 2021
 #
+# Edited by: Brian Gray 
+# For new debian labs Fall 2023
+#
 # Purpose: Check that students correctly managed user and group accounts
 #          when performing this lab, check that students have properly
 #          managed services, and created a shell script to work like
@@ -15,7 +18,7 @@
 
 # Function to indicate OK (in green) if check is true; otherwise, indicate
 # WARNING (in red) if check is false and end with false exit status
-
+suser=${SUDO_USER:-$USER}
 logfile=$(getent passwd ${SUDO_USER:-$USER} | cut -d: -f6)/Desktop/lab4_output.txt
 
 function check(){
@@ -41,7 +44,7 @@ clear  # Clear the screen
 # Make certain user is logged in as root
 if [ $(whoami) != "root" ]
 then
-  echo "Note: You are required to run this program as root."
+  echo "Note: You are required to run this program as root. Use sudo"
   exit 1
 fi
 
@@ -51,9 +54,9 @@ ATTENTION:
 In order to run this shell script, please
 have the following information ready:
 
- - IPADDRESSES for only your centos1 VM.
+ - IPADDRESSES for only your deb1 VM.
 
- - Your regular username password for centos1 VM.
+ - Your regular username password for deb1 VM.
    You were instructed to have the IDENTICAL usernames
    and passwords for ALL of these Linux servers. If not
    login into each VM, switch to root, and use the commands:
@@ -75,39 +78,39 @@ echo | tee -a $logfile
 echo "CHECKING YOUR LAB 4 WORK:" | tee -a $logfile
 echo | tee -a $logfile
 
-# Check ops245_2 user created (centos1)
-echo "Checking that ops245_2 user created (centos1): " | tee -a $logfile
-read -p "Enter your centos1 username: " centos1UserName
-read -p "Enter IP Address for your centos1 VMs eth0 device: " centos1_IPADDR
-check "ssh $centos1UserName@$centos1_IPADDR \"grep -isq \"ops245_2\" /etc/passwd\"" "This program did NOT detect the user \"ops245_2\" in the \"/etc/passwd\" file. Please create this user, complete this lab, and re-run this checking script." | tee -a $logfile
+# Check ops245_2 user created (deb1)
+echo "Checking that ops245_2 user created (deb1): " | tee -a $logfile
+read -p "Enter your deb1 username: " deb1UserName
+read -p "Enter IP Address for your deb1 VMs eth0 device: " deb1_IPADDR
+check "ssh $deb1UserName@$deb1_IPADDR \"grep -isq \"ops245_2\" /etc/passwd\"" "This program did NOT detect the user \"ops245_2\" in the \"/etc/passwd\" file. Please create this user, complete this lab, and re-run this checking script." | tee -a $logfile
 
-# Check ops245_1 user removed (centos1)
+# Check ops245_1 user removed (deb1)
 #echo -n "Checking that ops245_1 user removed: "
-#check "! ssh $centos1UserName@$centos1_IPADDR grep -isq \"ops245_2\" /etc/passwd" "This program detected the user \"ops245_1\" in the \"/etc/passwd\" file, when that user should have been removed. Please remove this user, complete this lab, and re-run this checking script."
+#check "! ssh $deb1UserName@$deb1_IPADDR grep -isq \"ops245_2\" /etc/passwd" "This program detected the user \"ops245_1\" in the \"/etc/passwd\" file, when that user should have been removed. Please remove this user, complete this lab, and re-run this checking script."
 
-# Check foo created in /etc/skel directory (centos1)
-echo "Checking that \"/etc/skel\" directory contains the file called \"foo\" (centos1):" | tee -a $logfile
-check "ssh $centos1UserName@$centos1_IPADDR ls /etc/skel | grep -isq \"foo\"" "This program did NOT detect the file called \"foo\" in the \"/etc/skel\" directory. Please create this file, remove the user ops245_2, and then create that user to see the \"foo\" file automatically created in that user's home directory upon the creation of this user. Complete this lab, and re-run this checking script." | tee -a $logfile
+# Check foobar.txt created in /etc/skel directory (deb1)
+echo "Checking that \"/etc/skel\" directory contains the file called \"foobar.txt\" (deb1):" | tee -a $logfile
+check "ssh $deb1UserName@$deb1_IPADDR ls /etc/skel | grep -isq \"foobar.txt\"" "This program did NOT detect the file called \"foobar.txt\" in the \"/etc/skel\" directory. Please create this file, remove the user ops245_2, and then create that user to see the \"foobar.txt\" file automatically created in that user's home directory upon the creation of this user. Complete this lab, and re-run this checking script." | tee -a $logfile
 
-# Check group name ops245 created with name "welcome" (centos1)
+# Check group created with name "welcome" (deb1)
 echo "Checking that a group name \"welcome\" is contained in the file \"/etc/group\": " | tee -a $logfile
-check "ssh $centos1UserName@$centos1_IPADDR grep -isq \"welcome\" /etc/group" "This program did NOT detect the group name \"welcome\" in the \"/etc/group\" file. Please remove the group, and correctly add the group with the correct GID, complete the lab (with secondary users added), and re-run this checking script." | tee -a $logfile
+check "ssh $deb1UserName@$deb1_IPADDR grep -isq \"welcome\" /etc/group" "This program did NOT detect the group name \"welcome\" in the \"/etc/group\" file. Please remove the group, and correctly add the group with the correct GID, complete the lab (with secondary users added), and re-run this checking script." | tee -a $logfile
 
 # Check user noobie removed
 echo "Checking that \"noobie\" user was removed: " | tee -a $logfile
-check "ssh $centos1UserName@$centos1_IPADDR ! grep -isq \"noobie\" /etc/passwd" "This program did NOT detect the user name \"noobie\" was removed. Remove this user account, and re-run this checking script." | tee -a $logfile
+check "ssh $deb1UserName@$deb1_IPADDR ! grep -isq \"noobie\" /etc/passwd" "This program did NOT detect the user name \"noobie\" was removed. Remove this user account, and re-run this checking script." | tee -a $logfile
 
-# Check iptables service started and enabled (centos1)
-echo "Checking that iptables service started and enabled (centos1): " | tee -a $logfile
-check "ssh $centos1UserName@$centos1_IPADDR systemctl status iptables | grep -iqs \"active\" && ssh $centos1UserName@$centos1_IPADDR systemctl status iptables | grep -iqs \"enabled\"" "This program did NOT detect that the iptables service has \"started\" and/or is \"enabled\". Use the systemctl to stopa and disable the iptables service, and re-run this checking script." | tee -a $logfile
+# Check ssh service started and enabled (deb1)
+echo "Checking that ssh service started and enabled (deb1): " | tee -a $logfile
+check "ssh $deb1UserName@$deb1_IPADDR systemctl status ssh | grep -iqs \"active\" && ssh $deb1UserName@$deb1_IPADDR systemctl status ssh | grep -iqs \"enabled\"" "This program did NOT detect that the ssh service has \"started\" and/or is \"enabled\". Use systemctl to start and enable the ssh service, and re-run this checking script." | tee -a $logfile
 
-# Check  runlevel 5 for centos1 VM
-echo "Checking that that \"centos1\" VM is in run-level 5: " | tee -a $logfile
-check "ssh $centos1UserName@$centos1_IPADDR /sbin/runlevel | grep -isq \"5$\"" "This program did NOT detect that your \"centos1\" VM is in runlevel 5. Please make certain you set the runlevel to 5 (Graphical mode with networking), and re-run this checking script." | tee -a $logfile
+# Check  runlevel 5 for deb1 VM
+echo "Checking that that \"deb1\" VM is in target graphical.target: " | tee -a $logfile
+check "ssh $deb1UserName@$deb1_IPADDR /usr/sbin/runlevel | grep -isq \"5$\"" "This program did NOT detect that your \"deb1\" VM is in graphical.target. Please make certain you set the default target to graphical, and re-run this checking script." | tee -a $logfile
 
-# Check for file: /user/bin/tarchiver2.py (c7host)
-echo  "Checking that the script \"/home/$USER/bin/tarchiver2.py\" exists: " | tee -a $logfile
-check "test -f /home/$USER/bin/tarchiver2.py" "This program did NOT detect the file \"/home/$USER/bin/tarchiver2.py\" on your \"c7host\" machine. Complete the lab, and re-run this checking script." | tee -a $logfile
+# Check for file: ~/bin/createUsers.bash (debhost)
+echo  "Checking that the script \"/home/$suser/bin/createUsers.bash\" exists: " | tee -a $logfile
+check "test -f /home/$suser/bin/createUsers.bash" "This program did NOT detect the file \"/home/$suser/bin/createUSers.bash\" on your \"debhost\" machine. Complete the lab, and re-run this checking script." | tee -a $logfile
 
 warningcount=`grep -c "WARNING" $logfile`
 
@@ -118,8 +121,9 @@ then
   echo "Congratulations!" | tee -a $logfile
   echo | tee -a $logfile
   echo "You have successfully completed Lab 4." | tee -a $logfile
-  echo "1. Submit a screenshot of your entire desktop (including this window) to your course professor." | tee -a $logfile
+  echo "1. Please follow the submission instructions of your Professor." | tee -a $logfile
   echo "2. A copy of this script output has been created at $logfile. Submit this file along with your screenshot." | tee -a $logfile
+  echo "3. Also submit a copy of your createUsers.bash script." | tee -a $logfile
   echo
 else
   echo "Your Lab is not complete." | tee -a $logfile
