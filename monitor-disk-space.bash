@@ -8,12 +8,19 @@
 # Re-written for OPS245 Debian labs: Brian Gray
 # Date: 19 Oct 2023
 
+# Test for sudo
+user=$(whoami)
+if [ ! $user = 'root' ]
+then
+    echo "You must run this script with sudo"
+    exit 1
+fi
 
 # The local email account to send notifications to
 admin="root"
 
 # The percentage use at which notifications will be sent
-alert=90
+alert=20
 
 # Get the machine's hostname
 hname=$(hostname)
@@ -35,6 +42,10 @@ do
     if [ $usage -ge $alert ]
     then
         # Send email notification
-        echo "$hname is running out of space on the $volume device. As of $date  it is $usage% full." \
-        | mail -s "Alert: $hname is almost out of disk space" $admin
+        mail -n -s "Alert: $hname is almost out of disk space" $admin <<EOT
+        $hname is running out of space on the $volume device.
+        As of $date  it is $usage% full.
+EOT
     fi
+done
+
