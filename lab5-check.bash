@@ -82,13 +82,13 @@ echo | tee -a $logfile
 echo "CHECKING YOUR LAB 5 WORK:" | tee -a $logfile
 echo | tee -a $logfile
 
-# Check for file pathname /home/$USER/bin/monitor-disk-space.bash (debhost)
-echo -n "Checking that \"/home/$USER/bin/monitor-disk-space.bash\" file exists (debhost): " | tee -a $logfile
-check "test -f \"/home/$USER/bin/monitor-disk-space.bash\"" "This program found there is no file called: \"//home/$USER/bin/monitor-disk-space.bash\" on your \"debhost\" VM. Please create this archive again (for the correct VM), and re-run this checking shell script." | tee -a $logfile
+# Check for file pathname /home/$suser/bin/monitor-disk-space.bash (debhost)
+echo -n "Checking that \"/home/$suser/bin/monitor-disk-space.bash\" file exists (debhost): " | tee -a $logfile
+check "test -f \"/home/$suser/bin/monitor-disk-space.bash\"" "This program found there is no file called: \"//home/$suser/bin/monitor-disk-space.bash\" on your \"debhost\" VM. Please create this archive again (for the correct VM), and re-run this checking shell script." | tee -a $logfile
 
 # Check crontab file (debhost)
 echo -n "Checking for crontab file (debhost): " | tee -a $logfile
-check "crontab -l -u $USER | grep -iqs \"/home/$USER/bin/monitor-disk-space.bash\"" "This program found there was no crontab entry to run the monitor-disk-space.bash shell script. Please properly create this crontab entry as ${USER}, and re-run this checking shell script." | tee -a $logfile
+check "crontab -l -u $suser | grep -iqs \"/home/$suser/bin/monitor-disk-space.bash\"" "This program found there was no crontab entry to run the monitor-disk-space.bash shell script. Please properly create this crontab entry as ${USER}, and re-run this checking shell script." | tee -a $logfile
 
 # Check /dev/vdb1 partition created (deb2)
 echo "Checking that /dev/vdb1 partition created (deb2): " | tee -a $logfile
