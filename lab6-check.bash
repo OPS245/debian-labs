@@ -101,7 +101,7 @@ check "ping 192.168.245.13 -c 1 > /dev/null 2>&1" "This program could not ping d
 
 # Check for persistent setting on deb1
 #echo "Check for persistent setting on deb1: " | tee -a $logfile
-#read -p "Enter your username for deb1: " deb1UserName
+read -p "Enter your username for deb1: " deb1UserName
 #check "ssh ${deb1UserName}@deb1 grep -isq 192.168.245.11 '/etc/NetworkManager/system-connections/Wired connection 1'" "This program could find a correct address in the network interface file. Please make fixes, and re-run this checking shell script." | tee -a $logfile
 
 # Check for persistent setting on deb2
