@@ -88,7 +88,7 @@ check "ssh $deb1UserName@192.168.245.42 sudo -S journalctl | grep -iqs 'DHCPACK'
 
 # Check that dhcp server is running on deb3 VM
 echo "Checking that isc-dhcp-server is currently running on your deb3 VM: " | tee -a $logfile
-check "ssh $deb1USerName@deb3 sudo -S systemctl status isc-dhcp-server | grep -iqs active" "This program did not detect that the \"dhcp\" service is running (active). Please make corrections, and re-run this checking shell script." | tee -a $logfile
+check "ssh $deb1USerName@deb3 sudo -S \"systemctl status isc-dhcp-server | grep -iqs active\"" "This program did not detect that the \"dhcp\" service is running (active). Please make corrections, and re-run this checking shell script." | tee -a $logfile
 
 # Check DHCPDISCOVER, DHCPOFFER, DHCPREQUEST & DHCPACK for deb3 in journal
 echo "Checking \" DHCPDISCOVER, DHCPOFFER, DHCPREQUEST & DHCPACK\" on" | tee -a $logfile
