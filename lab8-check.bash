@@ -88,12 +88,12 @@ check "ssh $deb1UserName@192.168.245.42 sudo -S journalctl | grep -iqs 'DHCPACK'
 
 # Check that dhcp server is running on deb3 VM
 echo "Checking that isc-dhcp-server is currently running on your deb3 VM: " | tee -a $logfile
-check "ssh $deb1USerName@deb3 sudo -S systemctl status isc-dhcp-server | grep -iqs active" "This program did not detect that the isc-dhcp-server is active. Please make corrections, and re-run this checking shell script." | tee -a $logfile
+check "ssh $deb1UserName@deb3 sudo -S systemctl status isc-dhcp-server | grep -iqs active" "This program did not detect that the isc-dhcp-server is active. Please make corrections, and re-run this checking shell script." | tee -a $logfile
 
 # Check DHCPDISCOVER, DHCPOFFER, DHCPREQUEST & DHCPACK for deb3 in journal
 echo "Checking \" DHCPDISCOVER, DHCPOFFER, DHCPREQUEST & DHCPACK\" in" | tee -a $logfile
 echo " journal on deb3 VM: " | tee -a $logfile
-check "ssh $deb1UserName@deb3 sudo -S (journalctl | grep -iqs DHCPDISCOVER && journalctl | grep -iqs DHCPOFFER && journalctl | grep -iqs DHCPREQUEST && journalctl | grep -iqs DHCPACK)" "This program did not detect the messages containing \" DHCPDISCOVER or DHCPOFFER or DHCPREQUEST or DHCPACK\" relating to \"deb3\" for your deb3 VM. Please make corrections, and re-run this checking shell script." | tee -a $logfile
+check "ssh $deb1UserName@deb3 sudo -S journalctl | grep -iqs DHCPDISCOVER && journalctl | grep -iqs DHCPOFFER && journalctl | grep -iqs DHCPREQUEST && journalctl | grep -iqs DHCPACK" "This program did not detect the messages containing \" DHCPDISCOVER or DHCPOFFER or DHCPREQUEST or DHCPACK\" relating to \"deb3\" for your deb3 VM. Please make corrections, and re-run this checking shell script." | tee -a $logfile
 
 # Check for non-empty "/var/lib/dhcp/dhcpd.leases" file on deb3 VM
 echo "Checking for non-empty \"/var/lib/dhcp/dhcpd.leases\" file on deb3 VM: " | tee -a $logfile
