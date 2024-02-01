@@ -11,6 +11,10 @@
 # Edited by: Brian Gray
 # Date: Sep 11 2023
 #
+# Minor Update by: Chris Johnson
+# Date: Feb 1 2024
+# Revision notes: Echo's text file output's location.
+#
 # Rewritten for new Debian Labs
 #
 # Purpose: Check that students correctly installed deb1, deb2,
@@ -146,8 +150,10 @@ then
   echo | tee -a $logfile
   echo "You have successfully completed Lab 2." | tee -a $logfile
   echo "Follow the submission instructions of your Professor. " | tee -a $logfile
+  echo "A text copy of this check script's results can be found at: $logfile"
   echo
 else
   echo "Your Lab is not complete." | tee -a $logfile
   echo "Correct the warnings listed above, then run this script again." | tee -a $logfile
+  echo "A text copy of this check script's results can be found at: $logfile"
 fi
