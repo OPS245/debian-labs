@@ -9,6 +9,11 @@
 #
 # Modified by: Brian Gray
 # Rewritten for Fall 2023 switch to Debian
+# 
+# Modified by: Chris Johnson
+# Date: January 16, 2025
+# Removal of partition check information and replaces with total space check (240 GB).
+
 
 # Purpose: Check that students correctly installed the debhost VM
 #          and properly performed common Linux commands. Script will
@@ -65,25 +70,9 @@ echo "CHECKING YOUR LAB 1 WORK:" | tee -a $logfile
 echo -n "Checking Correct Linux Distribution: " | tee -a $logfile
 check "grep -iqs \"VERSION=.*12\" /etc/os-release && grep -iqs \"debian\" /etc/os-release" " Your version of Debian is not 12. You are required to use Debian 12 in order to perform these labs. Install the correct version of Debian and re-run this shell script." | tee -a $logfile
 
-# Checking for correct partitions created
-echo -n "Checking that root partition was created: " | tee -a $logfile
-check "lsblk -f | grep  /$ | grep -isq ext4" "You needed to create a root partition (file system type: ext4). Please reinstall debhost and re-run this shell script." | tee -a $logfile
-
-echo -n "Checking that \"/home\" partition was created: " | tee -a $logfile
-check "lsblk -f | grep  /home$ | grep -isq ext4" "You needed to create a \"/home\" partition (file system type: ext4). Please reinstall debhost and re-run this shell script." | tee -a $logfile
-
-echo -n "Checking that \"/var/lib/libvirt/images\" partition was created: " | tee -a $logfile
-check "lsblk -f | grep  /var/lib/libvirt/images$ | grep -isq ext4" "You needed to create a \"/var/lib/libvirt/images\" partition (file system type: ext4 with correct absolute pathname correctly spelled). Please reinstall debhost and re-run this shell script." | tee -a $logfile
-
 # Checking for correct sizes for the partitions created
-echo -n "Checking that the root partition is at least 30GB: " | tee -a $logfile
-check "test `df | grep /$ | awk '{print $2;}'` -ge 28000000" "The size of the root partition must be at least 30GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
-
-echo -n "Checking that the /home partition is at least 40GB: " | tee -a $logfile
-check "test `df | grep /home$ | awk '{print $2;}'` -ge 38000000" "The /home partition must be at least 40GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
-
-echo -n "Checking that the \"/var/lib/libvirt/images\" partition is at least 100GB: " | tee -a $logfile
-check  "test `df | grep /var/lib/libvirt/images$ | awk '{print $2;}'` -ge 95000000" "The \"/var/lib/libvirt/images\" partition must be at least 100GB. Please reinstall debhost and re-run this shell script." | tee -a $logfile
+echo -n "Checking that the total space reserved is at least 240GB: "
+check "test `df | grep /$ | awk '{print $2;}'` -ge 236000000" "The size of the disk must be at least 240 GB. Please reinstall debhost and re-run this shell script."
 
 # Checking for network connectivity
 echo -n "Checking for network connectivity: " | tee -a $logfile
@@ -97,9 +86,9 @@ check "systemctl status apparmor | grep -isq disabled" "AppArmor is not disabled
 echo -n "Checking that \"/home/$suser/bin\" directory was created:" | tee -a $logfile
 check "test -d \"/home/$suser/bin\"" "This program did NOT detect that the \"/$suser/bin\" directory was created. Please create this directory, and re-run this shell script." | tee -a $logfile
 
-# Check for existence of /home/suser/bin/report.txt
-echo -n "Checking that \"/home/$suser/bin/report.txt\"  exists:" | tee -a $logfile
-check "test -f \"/home/$suser/bin/report.txt\"" "This program did NOT detect the output from the manual system report \"/home/$suser/bin/report.txt\". Please create your manual system report and re-run this shell script." | tee -a $logfile
+# Check for existence of /home/suser/bin/sysreport.txt
+echo -n "Checking that \"/home/$suser/bin/sysreport.txt\"  exists:" | tee -a $logfile
+check "test -f \"/home/$suser/bin/sysreport.txt\"" "This program did NOT detect the output from the manual system report \"/home/$suser/bin/sysreport.txt\". Please create your manual system report and re-run this shell script." | tee -a $logfile
 
 # Check for existence of /home/suser/bin/myreport.bash script
 echo -n "Checking that \"/home/$suser/bin/myreport.bash\" script exists:" | tee -a $logfile
