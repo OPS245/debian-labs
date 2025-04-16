@@ -10,8 +10,10 @@
 # Edited by Brian Gray for new Debian labs
 # Date: Nov 13, 2023
 #
+# Edited by Chris Johnson to replace Matrix domain name.
+# Date: April 16, 2025 
+#
 # Purpose: 
-
 # Function to indicate OK (in green) if check is true; otherwise, indicate
 # WARNING (in red) if check is false and end with false exit status
 
@@ -86,7 +88,7 @@ echo | tee -a $logfile
 # Check myfile.txt copied to user's Matrix home directory
 echo "Checking file \"myfile.txt\" copied to user's Matrix home directory: " | tee -a $logfile
 read -p "Enter your username for matrix: " matrixUserName
-check "ssh $matrixUserName@matrix.senecacollege.ca ls /home/$matrixUserName/myfile.txt > /dev/null 2>/dev/null" "This program did not detect the file called \"myfile.txt\" in your Matrix account's home directory. Please make corrections, and re-run this checking shell script." | tee -a $logfile
+check "ssh $matrixUserName@matrix.senecapolytechnic.ca ls /home/$matrixUserName/myfile.txt > /dev/null 2>/dev/null" "This program did not detect the file called \"myfile.txt\" in your Matrix account's home directory. Please make corrections, and re-run this checking shell script." | tee -a $logfile
 
 # Check that the account "other" was created
 echo "Checking that the user called \"other\" was created: " | tee -a $logfile
